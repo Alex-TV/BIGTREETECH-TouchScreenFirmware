@@ -10,7 +10,7 @@ void Serial_ReSourceDeInit(void)
 #ifdef BUZZER_PIN
   Buzzer_DeConfig();
 #endif
-  Serial_DeConfig();
+  Serial_DeInit();
 }
 
 void Serial_ReSourceInit(void)
@@ -18,7 +18,7 @@ void Serial_ReSourceInit(void)
 #ifdef BUZZER_PIN
   Buzzer_Config();
 #endif
-  Serial_Config(infoSettings.baudrate);
+  Serial_Init(infoSettings.baudrate);
   
 #ifdef U_DISK_SUPPROT
   USBH_Init(&USB_OTG_Core, USB_OTG_FS_CORE_ID, &USB_Host, &USBH_MSC_cb, &USR_cb);
@@ -32,11 +32,14 @@ void infoMenuSelect(void)
   {
     case SERIAL_TSC:
     {
+      #ifdef LED_color_PIN
+      led_color_Init(6,5);//
+      ws2812_send_DAT(LED_OFF);
+      #endif 
       Serial_ReSourceInit();
-      GUI_SetColor(FK_COLOR);
-      GUI_SetBkColor(BK_COLOR);
-      infoMenu.menu[infoMenu.cur] = menuMain;
-      
+      GUI_SetColor(FONT_COLOR);
+      GUI_SetBkColor(BACKGROUND_COLOR);
+      infoMenu.menu[infoMenu.cur] = menuStatus; //status screen as default screen on boot
       #ifdef SHOW_BTT_BOOTSCREEN
         u32 startUpTime = OS_GetTime();
         heatSetUpdateTime(100);
@@ -54,6 +57,9 @@ void infoMenuSelect(void)
       
     #ifdef ST7920_SPI
     case LCD12864:
+      #ifdef LED_color_PIN
+      LED_color_PIN_IPN();////
+      #endif  
       GUI_SetColor(ST7920_FNCOLOR);
       GUI_SetBkColor(ST7920_BKCOLOR);
       infoMenu.menu[infoMenu.cur] = menuST7920;      
@@ -61,11 +67,6 @@ void infoMenuSelect(void)
     #endif
   }
 }
-
-u32 select_mode [SELECTMODE]={
-    ICON_MARLIN,
-    ICON_BIGTREE,
-};
 
 #if LCD_ENCODER_SUPPORT
 void menuMode(void)
@@ -93,14 +94,12 @@ void menuMode(void)
   int16_t nowEncoder = encoderPosition = 0;
   int8_t  nowMode = modeRadio.select = infoSettings.mode;
   
-  GUI_Clear(BLACK);
+  GUI_Clear(BACKGROUND_COLOR);
   //RADIO_Create(&modeRadio);
   Serial_ReSourceDeInit();
-  
-  for(u8 i=0;i<SELECTMODE;i++)
-  {
-    lcd_frame_display(rect_of_mode[i].x0,rect_of_mode[i].y0-BYTE_HEIGHT,selecticonw,selecticonw,ICON_ADDR(select_mode[i]));
-  }
+
+  show_selectICON();
+  TSC_ReDrawIcon = NULL; // Disable icon redraw callback function
   
   selectmode(nowMode);
   

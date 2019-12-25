@@ -42,12 +42,15 @@ void Hardware_GenericInit(void)
   if(readStoredPara() == false) // Read settings parameter
   {    
     TSC_Calibration();
+    storePara();
   }
+  GUI_RestoreColorDefault();
   infoMenuSelect();
 }
 
 int main(void)
 {
+
   SCB->VTOR = VECT_TAB_FLASH;
  
   Hardware_GenericInit();

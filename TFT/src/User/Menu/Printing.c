@@ -22,14 +22,21 @@ const ITEM itemIsPause[2] = {
   {ICON_RESUME,               LABEL_RESUME},
 };
 
+#ifndef M27_WATCH_OTHER_SOURCES
+#define M27_WATCH_OTHER_SOURCES    false
+#endif
+
+#ifndef M27_REFRESH
+#define M27_REFRESH   3
+#endif
 
 static PRINTING infoPrinting;
-
 static u32     update_time = M27_REFRESH * 100;
+
 #ifdef ONBOARD_SD_SUPPORT
-static bool    update_waiting = false;
-#else
 static bool    update_waiting = M27_WATCH_OTHER_SOURCES;
+#else
+static bool    update_waiting = false;
 #endif
 
 
@@ -105,6 +112,16 @@ void endGcodeExecute(void)
   mustStoreCmd("M18\n");
 }
 
+//only return gcode file name except path
+//for example:"SD:/test/123.gcode"
+//only return "123.gcode"
+u8 *getCurGcodeName(char *path)
+{
+  int i=strlen(path);
+  for(; path[i]!='/'&& i>0; i--)
+  {}
+  return (u8* )(&path[i+1]);
+}
 
 void menuBeforePrinting(void)
 {
@@ -170,6 +187,7 @@ void menuBeforePrinting(void)
   }
   infoPrinting.printing = true;
   infoMenu.menu[infoMenu.cur] = menuPrinting;
+  printingItems.title.address = getCurGcodeName(infoFile.title);
 }
 
 
@@ -237,9 +255,9 @@ bool setPrintPause(bool is_pause)
           mustStoreCmd("G1 Z%.3f F%d\n", tmp.axis[Z_AXIS], NOZZLE_PAUSE_Z_FEEDRATE);
         }
         if(heatGetCurrentTemp(heatGetCurrentToolNozzle()) > PREVENT_COLD_EXTRUSION_MINTEMP)
-          mustStoreCmd("G1 E%.5f F%d\n", tmp.axis[E_AXIS] + NOZZLE_PAUSE_PURGE_LENGTH, NOZZLE_PAUSE_E_FEEDRATE);
+          mustStoreCmd("G1 E%.5f F%d\n", tmp.axis[E_AXIS] - NOZZLE_PAUSE_RETRACT_LENGTH + NOZZLE_RESUME_PURGE_LENGTH, NOZZLE_PAUSE_E_FEEDRATE);
         mustStoreCmd("G92 E%.5f\n", tmp.axis[E_AXIS]);
-        mustStoreCmd("G90 F%d\n", tmp.feedrate);
+        mustStoreCmd("G1 F%d\n", tmp.feedrate);
         
         if (isCoorRelative == true)     mustStoreCmd("G91\n");
         if (isExtrudeRelative == true)  mustStoreCmd("M83\n");
@@ -251,8 +269,8 @@ bool setPrintPause(bool is_pause)
   return true;
 }
 
-const GUI_RECT progressRect = {1*SPACE_X_PER_ICON, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y + ICON_HEIGHT/4,
-                               3*SPACE_X_PER_ICON, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y + ICON_HEIGHT*3/4};
+const GUI_RECT progressRect = {1*SPACE_X_PER_ICON, 0*ICON_HEIGHT+0*SPACE_Y+ICON_START_Y + ICON_HEIGHT/4,
+                               3*SPACE_X_PER_ICON, 0*ICON_HEIGHT+0*SPACE_Y+ICON_START_Y + ICON_HEIGHT*3/4};
 
 #define BED_X  (progressRect.x1 - 9 * BYTE_WIDTH)
 #define TEMP_Y (progressRect.y1 + 3)
@@ -297,22 +315,11 @@ void reDrawProgress(u8 progress)
 extern SCROLL   titleScroll;
 extern GUI_RECT titleRect;
 
-//only return gcode file name except path
-//for example:"SD:/test/123.gcode"
-//only return "123.gcode"
-u8 *getCurGcodeName(char *path)
-{
-  int i=strlen(path);
-  for(; path[i]!='/'&& i>0; i--)
-  {}
-  return (u8* )(&path[i+1]);
-}
 
 void printingDrawPage(void)
 {
   menuDrawPage(&printingItems);
   //	Scroll_CreatePara(&titleScroll, infoFile.title,&titleRect);  //
-  GUI_DispLenString(titleRect.x0, titleRect.y0, getCurGcodeName(infoFile.title), (titleRect.x1 - titleRect.x0));
   // printed time
   GUI_DispString(progressRect.x0, TIME_Y, (u8* )"T:");
   GUI_DispString(progressRect.x0+BYTE_WIDTH*4, TIME_Y, (u8* )":");
@@ -327,6 +334,8 @@ void printingDrawPage(void)
   reValueNozzle();
   reValueBed();
   reDrawTime();
+  // z_axis coordinate
+  GUI_DispString(BED_X,TIME_Y, (u8* )"Z:");
 }
 
 
@@ -381,7 +390,11 @@ void menuPrinting(void)
       time=infoPrinting.time;
       reDrawTime();
     }
-
+    //Z_AXIS coordinate
+    static COORDINATE tmp;
+    coordinateGetAll(&tmp);
+    GUI_DispFloat(BED_X+BYTE_WIDTH*2,TIME_Y,tmp.axis[Z_AXIS],3,3,LEFT);
+    
     key_num = menuKeyGetValue();
     switch(key_num)
     {
@@ -391,7 +404,7 @@ void menuPrinting(void)
       
       case KEY_ICON_3:
         if(isPrinting())				
-          infoMenu.menu[++infoMenu.cur]=menuStopPrinting;	
+          infoMenu.menu[++infoMenu.cur] = menuStopPrinting;	
         else
         {
           exitPrinting();
@@ -456,7 +469,7 @@ void completePrinting(void)
   }
 }
 
-void haltPrinting(void)
+void abortPrinting(void)
 {
   switch (infoFile.source)
   {
@@ -473,7 +486,7 @@ void haltPrinting(void)
   heatClearIsWaiting();
   
   mustStoreCmd("G0 Z%d F3000\n", limitValue(0, (int)coordinateGetAxisTarget(Z_AXIS) + 10, Z_MAX_POS));
-  mustStoreCmd("G28 X0 Y0\n");
+  mustStoreCmd(CANCEL_PRINT_GCODE);
 
   endPrinting();
   exitPrinting();
@@ -491,7 +504,7 @@ void menuStopPrinting(void)
     switch(key_num)
     {
       case KEY_POPUP_CONFIRM:
-        haltPrinting();
+        abortPrinting();
         infoMenu.cur-=2;
         break;
 
@@ -542,11 +555,8 @@ void menuShutDown(void)
           mustStoreCmd("%s S0\n", fanCmd[i]);  
         }
         mustStoreCmd("M81\n");
-        popupDrawPage(NULL, textSelect(LABEL_SHUT_DOWN), textSelect(LABEL_SHUTTING_DOWN), NULL, NULL);
-        while(1)
-        {
-          loopProcess();
-        }
+        infoMenu.cur--;
+        popupReminder(textSelect(LABEL_SHUT_DOWN), textSelect(LABEL_SHUTTING_DOWN));
     }
     loopProcess();
   }
@@ -619,7 +629,7 @@ void loopCheckPrinting(void)
   do
   {  /* WAIT FOR M27	*/
     if(update_waiting == true)                {nowTime=OS_GetTime();break;}
-    if(OS_GetTime()<nowTime+update_time)       break;
+    if(OS_GetTime() < nowTime+update_time)       break;
 
     if(storeCmd("M27\n")==false)               break;
 

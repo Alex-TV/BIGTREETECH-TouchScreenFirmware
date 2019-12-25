@@ -2,14 +2,27 @@
 #include "includes.h"
 
 REQUEST_COMMAND_INFO requestCommandInfo;
+bool WaitingGcodeResponse=0;
 
 static void resetRequestCommandInfo(void) 
 {
+  requestCommandInfo.cmd_rev_buf = malloc(CMD_MAX_REV);
+  while(!requestCommandInfo.cmd_rev_buf); // malloc failed
   memset(requestCommandInfo.cmd_rev_buf,0,CMD_MAX_REV);
   requestCommandInfo.inWaitResponse = true;
   requestCommandInfo.inResponse = false;
   requestCommandInfo.done = false;
   requestCommandInfo.inError = false;
+}
+
+bool RequestCommandInfoIsRunning(void)
+{
+   return WaitingGcodeResponse;  //i try to use requestCommandInfo.done but does not work as expected ...
+}
+
+void clearRequestCommandInfo(void) 
+{
+  free(requestCommandInfo.cmd_rev_buf);
 }
 
 /*
@@ -31,10 +44,13 @@ bool request_M21(void)
   resetRequestCommandInfo();
   mustStoreCmd(requestCommandInfo.command);
   // Wait for response
+  WaitingGcodeResponse = 1;
   while (!requestCommandInfo.done)
   {
     loopProcess();
   }
+  WaitingGcodeResponse = 0;
+  clearRequestCommandInfo();
   // Check reponse
   return !requestCommandInfo.inError;
 }
@@ -62,10 +78,39 @@ char *request_M20(void)
   resetRequestCommandInfo();
   mustStoreCmd(requestCommandInfo.command);
   // Wait for response
+  WaitingGcodeResponse = 1;
   while (!requestCommandInfo.done)
   {
     loopProcess();
   }
+  WaitingGcodeResponse = 0;
+  //clearRequestCommandInfo(); //shall be call after copying the buffer ...
+  return requestCommandInfo.cmd_rev_buf;
+}
+
+
+/*
+ * M33 retrieve long filename from short file name
+ *   M33 miscel~1/armchair/armcha~1.gco
+ * Output:
+ *   /Miscellaneous/Armchair/Armchair.gcode
+*/
+char * request_M33(char *filename)
+{
+  sprintf(requestCommandInfo.command, "M33 %s\n",filename);
+  strcpy(requestCommandInfo.startMagic,"/"); //un caractere qui est dans la ligne a traiter
+  strcpy(requestCommandInfo.stopMagic,"ok");
+  strcpy(requestCommandInfo.errorMagic,"Cannot open subdir");
+  resetRequestCommandInfo();
+  mustStoreCmd(requestCommandInfo.command);
+  // Wait for response
+  WaitingGcodeResponse = 1;
+  while (!requestCommandInfo.done)
+  {
+    loopProcess();
+  }
+  WaitingGcodeResponse = 0;
+  //clearRequestCommandInfo(); //shall be call after copying the buffer ...
   return requestCommandInfo.cmd_rev_buf;
 }
 
@@ -88,14 +133,17 @@ long request_M23(char *filename)
   resetRequestCommandInfo();
   mustStoreCmd(requestCommandInfo.command);
   // Wait for response
+  WaitingGcodeResponse = 1;
   while (!requestCommandInfo.done)
   {
     loopProcess();
   }
-
+  WaitingGcodeResponse = 0;
   // Find file size and report its.
   char *ptr;
-  return strtol(strstr(requestCommandInfo.cmd_rev_buf,"Size:")+5, &ptr, 10);
+  long size = strtol(strstr(requestCommandInfo.cmd_rev_buf,"Size:")+5, &ptr, 10);  
+  clearRequestCommandInfo();
+  return size;
 }
 
 /**

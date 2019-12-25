@@ -1,8 +1,8 @@
 #include "GUI.h"
 #include "includes.h"
 
-uint16_t foreGroundColor = FK_COLOR;
-uint16_t backGroundColor = BK_COLOR;
+uint16_t foreGroundColor = WHITE;
+uint16_t backGroundColor = BLACK;
 GUI_TEXT_MODE guiTextMode = GUI_TEXTMODE_NORMAL;
 GUI_NUM_MODE guiNumMode = GUI_NUMMODE_SPACE;
 
@@ -649,7 +649,8 @@ void GUI_DispDec(int16_t x, int16_t y, int32_t num, uint8_t len, uint8_t leftOrR
   {
     num = -num;
     isNegative = 1;
-  }        
+    len--; // Negative '-' takes up a display length
+  }
   for(i=0;i<len;i++)
   {
     bit_value=(num/GUI_Pow10[len-i-1])%10;
@@ -699,6 +700,7 @@ void GUI_DispFloat(int16_t x, int16_t y, float num, uint8_t llen, uint8_t rlen, 
   {
     num = -num;
     isNegative = 1;
+    llen--; // Negative '-' takes up a display length
   }        
 
   num *= GUI_Pow10[(unsigned)rlen];
@@ -738,7 +740,7 @@ void GUI_DispFloat(int16_t x, int16_t y, float num, uint8_t llen, uint8_t rlen, 
     floatBuf[bufIndex++] = (int)(num/GUI_Pow10[rlen-1-i])%10+'0';
     alen++;
   }
-  for(; alen < llen+rlen; alen++)
+  for(; alen < llen+rlen+1; alen++)
   {        
     floatBuf[bufIndex++] = ' ';
   }
@@ -791,7 +793,7 @@ void RADIO_Select(RADIO *raido, uint8_t select)
 }
 
 //
-void Scroll_CreatePara(SCROLL * para, uint8_t *pstr ,GUI_RECT *rect)
+void Scroll_CreatePara(SCROLL * para, uint8_t *pstr, const GUI_RECT *rect)
 {
   memset(para,0,sizeof(SCROLL));	
   para->text = pstr;
