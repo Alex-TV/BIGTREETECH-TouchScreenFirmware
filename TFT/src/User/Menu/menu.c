@@ -98,6 +98,15 @@ void menuDrawItem(const ITEM *item, uint8_t positon)
     GUI_DispStringInPrect(rect, content);
 }
 
+void menuDrawIconOnly(const ITEM *item, uint8_t positon)
+{
+  const GUI_RECT *rect = rect_of_key + positon;
+  if(item->icon != ICON_BACKGROUND)
+    ICON_ReadDisplay(rect->x0, rect->y0, item->icon);
+  else
+    GUI_ClearPrect(rect);
+}
+
  void menuDrawListItem(const LISTITEM *item, uint8_t position)
 {
    const GUI_RECT *rect = rect_of_keyListView + position;
@@ -109,6 +118,13 @@ void menuDrawItem(const ITEM *item, uint8_t positon)
   {
     ListItem_Display(rect, position, item, false);
   }
+}
+void menuRefreshListPage(void){
+ for (uint8_t i = 0; i < ITEM_PER_PAGE; i++)
+    {
+      menuDrawListItem(&curListItems->items[i], i);
+    }
+
 }
 
 static REMINDER reminder = {{0, 0, LCD_WIDTH, TITLE_END_Y}, 0, STATUS_UNCONNECT, LABEL_UNCONNECTED};
@@ -231,6 +247,7 @@ void menuDrawTitle(const uint8_t *content) //(const MENUITEMS * menuItems)
     GUI_SetTextMode(GUI_TEXTMODE_NORMAL);
   }
 
+  show_GlobalInfo();
   if(reminder.status == STATUS_IDLE) return;
   GUI_SetColor(RED);
   GUI_DispStringInPrect(&reminder.rect, textSelect(reminder.inf));
@@ -375,7 +392,7 @@ void loopFrontEnd(void)
 
 void loopProcess(void)
 {
-  Temp_change();
+  temp_Change();
   loopBackEnd();
   loopFrontEnd();
 }
