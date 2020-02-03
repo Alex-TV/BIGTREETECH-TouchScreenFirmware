@@ -33,6 +33,7 @@ bool moveCacheToCmd(void);
 void clearCmdQueue(void);
 void parseQueueCmd(void);
 void sendQueueCmd(void);
+void sendInternalQueueCmd(void);
 
 #endif
 
