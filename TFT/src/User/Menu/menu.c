@@ -358,7 +358,9 @@ void loopBackEnd(void)
 {
   getGcodeFromFile(); //Get Gcode command from the file to be printed
 
+#ifdef ONBOARD_SD_FOR_ESP3D
   sendInternalQueueCmd();
+#endif
 
   sendQueueCmd(); //Parse and send Gcode commands in the queue
 

@@ -407,12 +407,6 @@ void sendInternalQueueCmd(void)
 
   if (infoHost.wait == true)
     return;
-  if (begin_extcute)
-  {
-    memset(buffer, 0, 1024);
-    FillBuffer();
-  }
-
   if (infoCmd.count == 0)
     return;
   bool command_processed = false;
@@ -432,39 +426,6 @@ void sendInternalQueueCmd(void)
       begin_extcute = false;
       complete = false;
       StartExtcute();
-
-      // begin_extcute
-      //uint8_t port = infoCmd.queue[infoCmd.index_r].src;
-      //dmaL1Data[port].wIndex = (dmaL1Data[port].wIndex + 1) % DMA_TRANS_LEN;
-      // uint16_t wIndex = dmaL1Data[SERIAL_PORT].wIndex;
-      // for (uint16_t i = 0; i < sizeof(str_1); i++)
-      //  {
-      //    dmaL1Data[SERIAL_PORT].cache[wIndex] = str_1[i];
-      //     wIndex = (wIndex + 1) % DMA_TRANS_LEN;
-      //  }
-      //  for (uint16_t i = 0; i < sizeof(str_2); i++)
-      //  {
-      //    dmaL1Data[SERIAL_PORT].cache[wIndex] = str_2[i];
-      //    wIndex = (wIndex + 1) % DMA_TRANS_LEN;
-      //  }
-      //  for (uint16_t i = 0; i < sizeof(str_3); i++)
-      // {
-      //    dmaL1Data[SERIAL_PORT].cache[wIndex] = str_3[i];
-      //    wIndex = (wIndex + 1) % DMA_TRANS_LEN;
-      //  }
-
-      //dmaL1Data[SERIAL_PORT].cache = *str;
-      // dmaL1Data[SERIAL_PORT].wIndex = wIndex;
-      //sprintf(str, "%s", "Hellow_i_am_TFT.gcode");
-      //strcat(str, (const char *)str_0);
-      // strcat(str, (const char *)str_1);
-      // strcat(str, (const char *)str_2);
-      // strcat(str, (const char *)str_3);
-
-      //Serial_Puts(1, str);
-      // Serial_Puts(1, str_1);
-      // Serial_Puts(1, str_2);
-      // Serial_Puts(1, str_3);
       break;
     }
   }
@@ -472,10 +433,5 @@ void sendInternalQueueCmd(void)
   {
     infoCmd.count--;
     infoCmd.index_r = (infoCmd.index_r + 1) % CMD_MAX_LIST;
-  }
-  if (begin_extcute || complete)
-  {
-    complete = false;
-    Serial_Puts(1, buffer); //
   }
 }

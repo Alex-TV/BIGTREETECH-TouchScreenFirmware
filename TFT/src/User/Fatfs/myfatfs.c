@@ -45,15 +45,12 @@ bool scanPrintFilesFatFs(void)
       break;
     if ((finfo.fattrib & AM_HID) != 0)
       continue;
-    if (infoFile.f_num >= FILE_NUM && infoFile.F_num >= FOLDER_NUM)
+    if (infoFile.f_num >= FILE_NUM || infoFile.F_num >= FOLDER_NUM)
       break;
 
     len = strlen(finfo.fname) + 1;
     if ((finfo.fattrib & AM_DIR) == AM_DIR)
     {
-      if (infoFile.F_num >= FOLDER_NUM)
-        continue;
-
       infoFile.folder[infoFile.F_num] = malloc(len);
       if (infoFile.folder[infoFile.F_num] == NULL)
         break;
@@ -61,9 +58,6 @@ bool scanPrintFilesFatFs(void)
     }
     else
     {
-      if (infoFile.f_num >= FILE_NUM)
-        continue;
-
       if (strstr(finfo.fname, ".gcode") == NULL)
         continue;
 
