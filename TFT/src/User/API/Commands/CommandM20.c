@@ -102,12 +102,17 @@ FRESULT scan_files(char *path)
             strcat(buffer, full_file);
         }
     }
+    command_result_send();
     f_closedir(&dir);
     return res;
 }
 
 void command_result_send()
 {
+    if (index_w == 0)
+    {
+        return;
+    }
     Serial_Puts(ESP3D_PORT, buffer);
     memset(buffer, 0, buffer_size);
     index_w = 0;

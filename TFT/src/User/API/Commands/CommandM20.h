@@ -4,9 +4,5 @@
 
 #include "stdbool.h"
 #include "ff.h"
-
-bool begin_extcute;
-bool complete;
-char *buffer;
 void StartExtcute();
 #endif

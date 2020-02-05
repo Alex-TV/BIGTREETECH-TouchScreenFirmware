@@ -404,7 +404,11 @@ void sendQueueCmd(void)
 
 void sendInternalQueueCmd(void)
 {
-
+  // if (infoCmd.index_r != ESP3D_PORT)
+  // {
+  //   return;
+  // }
+  char *data_file;
   if (infoHost.wait == true)
     return;
   if (infoCmd.count == 0)
@@ -419,13 +423,40 @@ void sendInternalQueueCmd(void)
     {
     case 20:
       command_processed = true;
-      if (begin_extcute)
-      {
-        break;
-      }
-      begin_extcute = false;
-      complete = false;
       StartExtcute();
+      break;
+    case 23:
+      strcpy(infoCmd.queue[infoCmd.index_r].gcode, &infoCmd.queue[infoCmd.index_r].gcode[4]);
+
+      int ln_file = strchr(infoCmd.queue[infoCmd.index_r].gcode, '\n') - infoCmd.queue[infoCmd.index_r].gcode + 1;
+
+      data_file = malloc(ln_file);
+      memset(data_file, 0, ln_file);
+
+      strncpy(data_file, infoCmd.queue[infoCmd.index_r].gcode, ln_file - 1);
+      strcpy(infoCmd.queue[infoCmd.index_r].gcode, &infoCmd.queue[infoCmd.index_r].gcode[ln_file]);
+
+      if (infoCmd.queue[infoCmd.index_r].gcode[0] == 0)
+      {
+        cmd = strtol(&infoCmd.queue[infoCmd.index_r].gcode[1], NULL, 10);
+        if (cmd == 24)
+        {
+          sendInternalQueueCmd();
+          return;
+        }
+      }
+
+      free(data_file);
+
+    case 24:
+      command_processed = true;
+      infoMenu.cur = 1;
+      infoFile.source = TFT_SD;
+      memset(infoFile.title, 0, 1024);
+      strcat(infoFile.title, "SD:");
+      strcat(infoFile.title, data_file);
+      free(data_file);
+      menuBeforePrinting();
       break;
     }
   }
