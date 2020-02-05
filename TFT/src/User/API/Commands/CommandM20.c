@@ -7,7 +7,9 @@
 
 void command_result_send();
 FRESULT scan_files(char *path);
+
 const int buffer_size = 1024;
+
 char *buffer;
 int index_w;
 
@@ -18,25 +20,32 @@ char error_str[] = "Error\n";
 void StartExtcute()
 {
     FATFS fs;
-    char buff[255];
-    index_w = 0;
-    buffer = malloc(sizeof(char) * buffer_size);
-    memset(buffer, 0, buffer_size);
-    Serial_Puts(ESP3D_PORT, begin_str);
 
     FRESULT res = f_mount(&fs, "SD:", 1);
+    if (res != FR_OK)
+    {
+        Serial_Puts(ESP3D_PORT, error_str);
+        return;
+    }
+
+    Serial_Puts(ESP3D_PORT, begin_str);
+
+    index_w = 0;
+    buffer = malloc(buffer_size);
+    memset(buffer, 0, buffer_size);
+
+    char buff[FF_LFN_BUF + 1];
+    strcpy(buff, "");
+
+    res = scan_files(buff);
+
     if (res == FR_OK)
     {
-        strcpy(buff, "");
-        res = scan_files(buff);
-        if (res == FR_OK)
-        {
-            Serial_Puts(ESP3D_PORT, end_str);
-        }
-        else
-        {
-            Serial_Puts(ESP3D_PORT, error_str);
-        }
+        Serial_Puts(ESP3D_PORT, end_str);
+    }
+    else
+    {
+        Serial_Puts(ESP3D_PORT, error_str);
     }
     free(buffer);
 }
@@ -81,7 +90,7 @@ FRESULT scan_files(char *path)
         }
         else
         {
-            char full_file[255];
+            char full_file[(FF_LFN_BUF + 1) * 3];
             sprintf(full_file, "%s/%s %d\n", path, fno.fname, (int)fno.fsize);
             int full_file_ln = strlen(full_file);
             if (full_file_ln + index_w >= buffer_size)
@@ -100,8 +109,6 @@ FRESULT scan_files(char *path)
 void command_result_send()
 {
     Serial_Puts(ESP3D_PORT, buffer);
-    free(buffer);
-    buffer = malloc(sizeof(char) * buffer_size);
     memset(buffer, 0, buffer_size);
     index_w = 0;
 }
