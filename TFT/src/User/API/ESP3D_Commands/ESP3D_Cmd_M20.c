@@ -1,4 +1,4 @@
-#include "CommandM20.h"
+#include "ESP3D_Cmd_M20.h"
 #include "includes.h"
 #include "ff.h"
 #include "myfatfs.h"
@@ -17,7 +17,7 @@ char begin_str[] = "Begin file list\n";
 char end_str[] = "End file list\n";
 char error_str[] = "Error\n";
 
-void StartExtcute()
+void Execution_ESP3D_M20()
 {
     FATFS fs;
 
