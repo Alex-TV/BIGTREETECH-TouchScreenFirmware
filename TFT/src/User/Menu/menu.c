@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "includes.h"
 #include "list_item.h"
+#include "ESP3D_Commands/ESP3D_InterfaceCmd.h"
 
 // exhibitRect is 2 ICON Space in the Upper Row and 2 Center Coloum.
 const GUI_RECT exhibitRect = {
