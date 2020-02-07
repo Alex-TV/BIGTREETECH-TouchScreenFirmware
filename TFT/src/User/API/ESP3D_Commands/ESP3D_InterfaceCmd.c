@@ -8,6 +8,8 @@
 #include "ESP3D_Cmd_M24.h"
 #include "ESP3D_Cmd_M30.h"
 
+bool file_open = false;
+
 void ESP3DSendQueueCmd(void)
 {
     if (isPrinting())
@@ -22,6 +24,7 @@ void ESP3DSendQueueCmd(void)
     {
         return;
     }
+
     bool command_processed = false;
     u16 cmd = 0;
     switch (infoCmd.queue[infoCmd.index_r].gcode[0])
@@ -52,14 +55,41 @@ void ESP3DSendQueueCmd(void)
             Execution_ESP3D_M24();
             Clear_ESP3D_file_for_print();
             break;
+        case 28:
+            command_processed = true;
+            Execution_ESP3D_M23(infoCmd.queue[infoCmd.index_r].gcode);
+            file_open = Execution_ESP3D_M28(Get_ESP3D_file_for_print());
+            Clear_ESP3D_file_for_print();
+            break;
+        case 29:
+            command_processed = true;
+            if (file_open)
+            {
+                Execution_ESP3D_M29(Get_New_File());
+                file_open = false;
+            }
+            break;
         case 30:
             command_processed = true;
             Execution_ESP3D_M23(infoCmd.queue[infoCmd.index_r].gcode);
             Execution_ESP3D_M30();
             Clear_ESP3D_file_for_print();
             break;
+        default:
+            if (file_open)
+            {
+                bool res = Add_To_File_ESP3D_M28(infoCmd.queue[infoCmd.index_r].gcode);
+                command_processed = true;
+                if (!res)
+                {
+                    Execution_ESP3D_M29(Get_New_File());
+                    file_open = false;
+                }
+            }
+            break;
         }
     }
+
     if (command_processed)
     {
         infoCmd.count--;
