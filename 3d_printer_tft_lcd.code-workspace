@@ -12,7 +12,8 @@
 			"stdbool.h": "c",
 			"list_item.h": "c",
 			"esp3d_interfacecmd.h": "c",
-			"limits.h": "c"
+			"limits.h": "c",
+			"cstdlib": "c"
 		}
 	}
 }

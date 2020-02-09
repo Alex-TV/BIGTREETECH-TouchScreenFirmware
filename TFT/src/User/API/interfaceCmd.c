@@ -400,4 +400,3 @@ void sendQueueCmd(void)
 
   powerFailedEnable(true);
 }
-

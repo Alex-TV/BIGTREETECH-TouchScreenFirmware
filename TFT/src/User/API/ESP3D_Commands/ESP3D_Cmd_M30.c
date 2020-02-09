@@ -6,6 +6,7 @@
 #include "vfs.h"
 #include "Serial.h"
 #include "string.h"
+#include "ESP3D_InterfaceCmd.h"
 
 void Execution_ESP3D_M30()
 {
@@ -15,6 +16,8 @@ void Execution_ESP3D_M30()
     strcat(title, Get_ESP3D_file_for_print());
     if (f_unlink(title) != FR_OK)
     {
-        Serial_Puts(ESP3D_PORT, "Error\n");
+        Serial_Puts(ESP3D_PORT, error_str);
+        return;
     }
+    Serial_Puts(ESP3D_PORT, ok_str);
 }

@@ -23,7 +23,7 @@
 /   2: f_opendir(), f_readdir() and f_closedir() are removed in addition to 1.
 /   3: f_lseek() function is removed in addition to 2. */
 
-#define FF_USE_STRFUNC 1
+#define FF_USE_STRFUNC 0
 /* This option switches string functions, f_gets(), f_putc(), f_puts() and f_printf().
 /
 /  0: Disable string functions.
@@ -37,7 +37,7 @@
 #define FF_USE_MKFS 0
 /* This option switches f_mkfs() function. (0:Disable or 1:Enable) */
 
-#define FF_USE_FASTSEEK 0
+#define FF_USE_FASTSEEK 1
 /* This option switches fast seek function. (0:Disable or 1:Enable) */
 
 #define FF_USE_EXPAND 0

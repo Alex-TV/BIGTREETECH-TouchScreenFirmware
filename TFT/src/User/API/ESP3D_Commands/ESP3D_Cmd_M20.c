@@ -4,6 +4,7 @@
 #include "myfatfs.h"
 #include "diskio.h"
 #include "limits.h"
+#include "ESP3D_InterfaceCmd.h"
 
 void command_result_send();
 FRESULT scan_files(char *path);
@@ -12,10 +13,6 @@ const int buffer_size = 1024;
 
 char *buffer;
 int index_w;
-
-char begin_str[] = "Begin file list\n";
-char end_str[] = "End file list\n";
-char error_str[] = "Error\n";
 
 void Execution_ESP3D_M20()
 {
