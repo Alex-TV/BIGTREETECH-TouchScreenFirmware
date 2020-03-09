@@ -49,6 +49,9 @@
 #include "stm32f10x_wwdg.h"
 #include "misc.h" /* High level functions for NVIC and SysTick (add-on to CMSIS functions) */
 
+/************************************* SysTick ********************************/
+#define _SysTick
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Uncomment the line below to expanse the "assert_param" macro in the 

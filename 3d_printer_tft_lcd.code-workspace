@@ -13,7 +13,13 @@
 			"list_item.h": "c",
 			"esp3d_interfacecmd.h": "c",
 			"limits.h": "c",
-			"cstdlib": "c"
+			"cstdlib": "c",
+			"task.h": "c",
+			"freertos.h": "c",
+			"portable.h": "c",
+			"freertosconfig.h": "c",
+			"portmacro.h": "c",
+			"deprecated_definitions.h": "c"
 		}
 	}
 }
