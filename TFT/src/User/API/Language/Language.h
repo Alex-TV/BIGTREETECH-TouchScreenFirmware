@@ -4,7 +4,6 @@
 #include "stdbool.h"
 #include "variants.h"
 
-
 enum
 {
   ENGLISH = 0,
@@ -27,7 +26,7 @@ enum
 
 enum
 {
-  LABEL_LANGUAGE =0,
+  LABEL_LANGUAGE = 0,
   LABEL_HEAT,
   LABEL_MOVE,
   LABEL_HOME,
@@ -94,6 +93,7 @@ enum
   LABEL_DISCONNECT,
   LABEL_BAUDRATE_115200,
   LABEL_BAUDRATE_250000,
+  LABEL_BAUDRATE_921600,
   LABEL_RUNOUT_OFF,
   LABEL_RUNOUT_ON,
   LABEL_SMART_RUNOUT_ON,
@@ -183,7 +183,7 @@ enum
   LABEL_SEND_END_GCODE,
   LABEL_PERSISTENT_STATUS_INFO,
   LABEL_FILE_LISTMODE,
-  
+
   //add new keywords above this line only
   //keep the following always at the end of this list
   LABEL_NUM,
@@ -191,6 +191,6 @@ enum
   LABEL_DYNAMIC
 };
 
-u8 * textSelect(u8 sel);
+u8 *textSelect(u8 sel);
 
 #endif
