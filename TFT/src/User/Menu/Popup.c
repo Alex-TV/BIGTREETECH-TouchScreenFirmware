@@ -83,8 +83,7 @@ void menuPopup(void)
   }
 }
 
-void popupReminder(u8* info, u8* context)
-{
+void popupReminder(u8* info, u8* context) {
   #ifdef CLEAN_MODE_SWITCHING_SUPPORT
     if (infoSettings.mode == LCD12864) return;
   #endif
@@ -94,3 +93,4 @@ void popupReminder(u8* info, u8* context)
     infoMenu.menu[++infoMenu.cur] = menuPopup;
   }
 }
+
