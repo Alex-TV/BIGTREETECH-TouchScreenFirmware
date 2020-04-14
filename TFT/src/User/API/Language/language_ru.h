@@ -68,6 +68,7 @@
 #define RU_DISCONNECT "Отключить"
 #define RU_BAUDRATE_115200 "115200"
 #define RU_BAUDRATE_250000 "250000"
+#define RU_BAUDRATE_500000 "500000"
 #define RU_BAUDRATE_921600 "921600"
 #define RU_RUNOUT_OFF "Окончание OFF"
 #define RU_RUNOUT_ON "Окончание ON"

@@ -68,6 +68,7 @@
 #define PL_DISCONNECT "Odłącz"
 #define PL_BAUDRATE_115200 "115200"
 #define PL_BAUDRATE_250000 "250000"
+#define PL_BAUDRATE_500000 "500000"
 #define PL_BAUDRATE_921600 "921600"
 #define PL_RUNOUT_OFF "Czujnik filamentu Wł."
 #define PL_RUNOUT_ON "Czujnik filamentu Wył."

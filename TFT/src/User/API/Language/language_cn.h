@@ -68,6 +68,7 @@
 #define CN_DISCONNECT "断开连接"
 #define CN_BAUDRATE_115200 "115200"
 #define CN_BAUDRATE_250000 "250000"
+#define CN_BAUDRATE_500000 "500000"
 #define CN_BAUDRATE_921600 "921600"
 #define CN_RUNOUT_OFF "耗材检测关"
 #define CN_RUNOUT_ON "耗材检测开"

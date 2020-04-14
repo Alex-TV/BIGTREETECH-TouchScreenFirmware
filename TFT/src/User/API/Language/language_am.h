@@ -68,6 +68,7 @@
 #define AM_DISCONNECT "Անջատել"
 #define AM_BAUDRATE_115200 "115200"
 #define AM_BAUDRATE_250000 "250000"
+#define AM_BAUDRATE_500000 "500000"
 #define AM_BAUDRATE_921600 "921600"
 #define AM_RUNOUT_OFF "Runout OFF"
 #define AM_RUNOUT_ON "Runout ON"

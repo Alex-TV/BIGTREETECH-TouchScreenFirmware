@@ -68,6 +68,7 @@
 #define PT_DISCONNECT "Desconectar"
 #define PT_BAUDRATE_115200 "115200"
 #define PT_BAUDRATE_250000 "250000"
+#define PT_BAUDRATE_500000 "500000"
 #define PT_BAUDRATE_921600 "921600"
 #define PT_RUNOUT_OFF "Runout OFF"
 #define PT_RUNOUT_ON "Runout ON"

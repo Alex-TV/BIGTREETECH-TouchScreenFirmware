@@ -68,6 +68,7 @@
 #define FR_DISCONNECT "Déconnexion"
 #define FR_BAUDRATE_115200 "115200"
 #define FR_BAUDRATE_250000 "250000"
+#define FR_BAUDRATE_500000 "500000"
 #define FR_BAUDRATE_921600 "921600"
 #define FR_RUNOUT_OFF "Détection OFF"
 #define FR_RUNOUT_ON "Détection ON"

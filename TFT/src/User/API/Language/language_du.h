@@ -68,6 +68,7 @@
 #define DU_DISCONNECT "Loskoppelen"
 #define DU_BAUDRATE_115200 "115200"
 #define DU_BAUDRATE_250000 "250000"
+#define DU_BAUDRATE_500000 "500000"
 #define DU_BAUDRATE_921600 "921600"
 #define DU_RUNOUT_OFF "Uitloop AF"
 #define DU_RUNOUT_ON "Uitloop AAN"
