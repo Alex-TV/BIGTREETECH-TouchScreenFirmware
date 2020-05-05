@@ -178,7 +178,7 @@
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
 #define X_MAX_POS 235
-#define Y_MAX_POS 235
+#define Y_MAX_POS 225
 #define Z_MAX_POS 250
 
 // Specify a pause position as { X, Y, Z_raise }
@@ -211,7 +211,7 @@
 #define LEVELING_POINT_3_Y         (Y_MAX_POS - 20)
 #define LEVELING_POINT_4_X         (X_MIN_POS + 20)
 #define LEVELING_POINT_4_Y         (Y_MAX_POS - 20)
-#define LEVELING_POINT_Z           0f  // Z-axis position when nozzle stays for leveling
+#define LEVELING_POINT_Z           0.0f  // Z-axis position when nozzle stays for leveling
 #define LEVELING_POINT_MOVE_Z      10.0f // Z-axis position when nozzle move to next point
 #define LEVELING_POINT_XY_FEEDRATE 6000  // (mm/min) X and Y axes move feedrate
 #define LEVELING_POINT_Z_FEEDRATE  600   // (mm/min) Z axis move feedrate
