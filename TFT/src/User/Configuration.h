@@ -178,7 +178,7 @@
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
 #define X_MAX_POS 235
-#define Y_MAX_POS 235
+#define Y_MAX_POS 233
 #define Z_MAX_POS 250
 
 // Specify a pause position as { X, Y, Z_raise }
@@ -328,6 +328,6 @@
 #define PRINT_END_GCODE "G90\nG1 E-4\nG92 E0\nM18\n" // Switch to absolute positioning, reduce filament pressure by performing small retract, reset extruder position, disable steppers
 
 // Cancel G-code - run this G-code after canceling print
-#define PRINT_CANCEL_GCODE "G28 XY R10\n" // Home XY and raise Z 10mm
+#define PRINT_CANCEL_GCODE "G28 X Y R10\nG1 Y230" // Home XY and raise Z 10mm
 
 #endif
