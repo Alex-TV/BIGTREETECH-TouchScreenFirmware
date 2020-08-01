@@ -22,6 +22,8 @@ enum
   SLOVAK,
   DUTCH,
   HUNGARIAN,
+  TURKISH,
+  GREEK,
 
   LANGUAGE_NUM,
 };
