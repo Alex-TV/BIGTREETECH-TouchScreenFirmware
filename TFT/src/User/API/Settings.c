@@ -82,7 +82,8 @@ void infoSettingsReset(void)
   infoSettings.chamber_en             = DISABLE;
   infoSettings.ext_count              = EXTRUDER_NUM;
   infoSettings.fan_count              = FAN_NUM;
-  infoSettings.auto_load_leveling     = AUTO_SAVE_LOAD_LEVELING_VALUE;
+  infoSettings.fan_ctrl_count         = FAN_CTRL_NUM;
+  infoSettings.auto_load_leveling     = AUTO_SAVE_LOAD_BL_VALUE;
   infoSettings.onboardSD              = AUTO;     //ENABLED / DISABLED / AUTO
   infoSettings.m27_refresh_time       = M27_REFRESH;
   infoSettings.m27_active             = M27_WATCH_OTHER_SOURCES;
@@ -155,22 +156,39 @@ void initMachineSetting(void){
   infoMachineSettings.promptSupport           = DISABLED;
   infoMachineSettings.onboard_sd_support      = ENABLED;
   infoMachineSettings.autoReportSDStatus      = DISABLED;
-  infoMachineSettings.enableubl               = DISABLED;
+  infoMachineSettings.blType                  = BL_UNKNOWN;
 }
 
 void setupMachine(void)
 {
-  #ifdef ENABLE_UBL_VALUE
-    if (infoMachineSettings.autoLevel == 1 && ENABLE_UBL_VALUE == 1) {
-      infoMachineSettings.enableubl = ENABLE;
-    }
-  #endif
-  #ifdef AUTO_SAVE_LOAD_LEVELING_VALUE
-    if (infoMachineSettings.autoLevel == 1 && infoMachineSettings.EEPROM == 1 && infoSettings.auto_load_leveling == 1){
-      storeCmd("M420 S1\n");
-    }
-  #endif
-  if(infoMachineSettings.isMarlinFirmware != 1) //Smoothieware does not report detailed M115 capabilities
+  switch (ENABLE_BL_VALUE)
+  {
+    case 2:
+      infoMachineSettings.blType = BL_ABL;
+      break;
+
+    case 3:
+      infoMachineSettings.blType = BL_BBL;
+      break;
+
+    case 4:
+      infoMachineSettings.blType = BL_UBL;
+      break;
+
+    case 5:
+      infoMachineSettings.blType = BL_MBL;
+      break;
+
+    default:
+      break;
+  }
+
+  if (infoMachineSettings.blType != BL_UNKNOWN && infoMachineSettings.EEPROM == 1 && infoSettings.auto_load_leveling == 1)
+  {
+    storeCmd("M420 S1\n");
+  }
+
+  if (infoMachineSettings.isMarlinFirmware != 1) // Smoothieware does not report detailed M115 capabilities
   {
     infoMachineSettings.EEPROM                  = ENABLED;
     infoMachineSettings.autoReportTemp          = DISABLED;
@@ -206,3 +224,70 @@ float flashUsedPercentage(void)
   float percent = ((float)FLASH_USED * 100) / total;
   return percent;
 }
+
+// check font/icon/config signature in SPI flash for update
+void checkflashSign(void)
+{
+  uint32_t flash_sign[sign_count] = {FONT_CHECK_SIGN, CONFIG_CHECK_SIGN, LANGUAGE_CHECK_SIGN, ICON_CHECK_SIGN};
+  uint32_t cur_flash_sign[sign_count];
+  uint32_t addr = FLASH_SIGN_ADDR;
+  uint32_t len = sizeof(flash_sign);
+
+  W25Qxx_ReadBuffer((uint8_t*)&cur_flash_sign, addr, len);
+
+  cur_flash_sign[lang_sign] = flash_sign[lang_sign]; // ignore language signature not implemented yet
+
+  int status = memcmp(flash_sign, cur_flash_sign, len);
+  if (status != 0)
+  {
+    int ypos = BYTE_HEIGHT + 5;
+    GUI_Clear(BLACK);
+    GUI_DispString(5, 5, (uint8_t *)"Found outdated data:");
+    ypos += BYTE_HEIGHT;
+    if (cur_flash_sign[font_sign] == flash_sign[font_sign])
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Fonts: OK");
+    }
+    else
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Fonts: Update required");
+      ypos += BYTE_HEIGHT;
+    }
+    if (cur_flash_sign[config_sign] == flash_sign[config_sign])
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Config: OK");
+    }
+    else
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Config: Update required");
+      ypos += BYTE_HEIGHT;
+    }
+    /*
+    if (cur_flash_sign[lang_sign] == flash_sign[lang_sign])
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Language: OK");
+    }
+    else
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Language: Update required");
+      ypos += BYTE_HEIGHT;
+    }
+    */
+    if (cur_flash_sign[icon_sign] == flash_sign[icon_sign])
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Icons: OK");
+    }
+    else
+    {
+      GUI_DispString(10, ypos, (uint8_t *)"Icons: Update required");
+    }
+GUI_DispStringInRectEOL(10, ypos + 10, LCD_WIDTH, LCD_HEIGHT, (uint8_t *)"Insert the SD card with the required\n"
+                                                                         "files and press the reset button\nto update.");
+while (1)
+  ;
+  }
+
+
+}
+
+

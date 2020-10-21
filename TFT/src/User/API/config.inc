@@ -5,6 +5,8 @@
 *
 * Description: https://en.wikipedia.org/wiki/X_Macro
 */
+//after changing/adding/removing a keyword, change the CONFIG_FLASH_SIGN in Settings.h
+
 X_CONFIG(UNIFIEDMENU)
 X_CONFIG(UART_BAUDRATE)
 X_CONFIG(LANGUAGE)
@@ -37,6 +39,7 @@ X_CONFIG(HEATED_BED)
 X_CONFIG(HEATED_CHAMBER)
 X_CONFIG(EXT_COUNT)
 X_CONFIG(FAN_COUNT)
+X_CONFIG(FAN_CTRL_COUNT)
 X_CONFIG(MAX_TEMP)
 X_CONFIG(MIN_TEMP)
 X_CONFIG(FAN_MAX)
@@ -131,3 +134,5 @@ X_CONFIG(CANCEL_GCODE_ON)
 X_CONFIG(START_GCODE)
 X_CONFIG(END_GCODE)
 X_CONFIG(CANCEL_GCODE)
+
+//after changing/adding/removing a keyword, change the CONFIG_FLASH_SIGN in Settings.h

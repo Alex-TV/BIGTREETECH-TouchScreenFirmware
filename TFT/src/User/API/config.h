@@ -1,10 +1,16 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdbool.h>
 #include "variants.h"
-#include "stdbool.h"
 #include "includes.h"
 #include "ff.h"
+
+//after changing/adding/removing a keyword, change the CONFIG_FLASH_SIGN in Settings.h
 
 #define  LINE_MAX_CHAR 100
 #define CONFIG_FILE_PATH            "0:config.ini"
@@ -43,6 +49,7 @@
 #define CONFIG_HEATED_CHAMBER       "heated_chamber:"
 #define CONFIG_EXT_COUNT            "ext_count:"
 #define CONFIG_FAN_COUNT            "fan_count:"
+#define CONFIG_FAN_CTRL_COUNT       "fan_ctrl_count:"
 #define CONFIG_MAX_TEMP             "max_temp:"
 #define CONFIG_MIN_TEMP             "min_temp:"
 #define CONFIG_FAN_MAX              "fan_max:"
@@ -185,7 +192,7 @@ typedef enum
 }CONFIG_STATS;
 
 
-void getConfigFromFile(void);
+bool getConfigFromFile(void);
 void parseConfigLine(void);
 void parseConfigKey(u16 index);
 void writeConfig(uint8_t* dataBytes, uint16_t numBytes, uint32_t addr, uint32_t maxSize);
@@ -204,4 +211,9 @@ enum
 
   CONFIG_COUNT,
 };
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

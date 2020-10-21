@@ -1,18 +1,46 @@
 #ifndef _SETTINGS_H_
 #define _SETTINGS_H_
 
-#include "stdint.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
 #include "coordinate.h"
 #include "Configuration.h"
 
+
+enum
+{
+  font_sign,
+  config_sign,
+  lang_sign,
+  icon_sign,
+  sign_count
+};
+
+// Config version support
+// change if new elements/keywords are added/removed/changed in the configuration.h Format YYYYMMDD
+// this number should match the CONFIG_VERSION in configuration.h
 #define CONFIG_SUPPPORT 20200810
+
+#define FONT_FLASH_SIGN       20200908 //(YYYYMMDD) change if fonts require updating
+#define CONFIG_FLASH_SIGN     20200908 //(YYYYMMDD) change if any keyword(s) in config.ini is added or removed
+#define LANGUAGE_FLASH_SIGN   20200908 //(YYYYMMDD) change if any keyword(s) in language pack is added or removed
+#define ICON_FLASH_SIGN       20200908 //(YYYYMMDD) change if any icon(s) is added or removed
+
+#define FONT_CHECK_SIGN       (FONT_FLASH_SIGN + WORD_UNICODE)
+#define CONFIG_CHECK_SIGN     (CONFIG_FLASH_SIGN + STRINGS_STORE_ADDR)
+#define LANGUAGE_CHECK_SIGN   (LANGUAGE_FLASH_SIGN)
+#define ICON_CHECK_SIGN       (ICON_FLASH_SIGN + ICON_ADDR(0))
 
 #define ITEM_BAUDRATE_NUM     9
 
 #define MAX_EXT_COUNT         6
 #define MAX_HOTEND_COUNT      6
 #define MAX_HEATER_COUNT      (2 + MAX_HOTEND_COUNT) // chamber + bed + hotend
-#define MAX_FAN_COUNT         6
+#define MAX_FAN_CTRL_COUNT    2
+#define MAX_FAN_COUNT         (6 + MAX_FAN_CTRL_COUNT)
 
 #define AXIS_NUM              (TOTAL_AXIS - 1)
 #define SPEED_COUNT           3
@@ -109,6 +137,7 @@ typedef struct
   uint8_t   chamber_en;
   uint8_t   ext_count;
   uint8_t   fan_count;
+  uint8_t   fan_ctrl_count;
   uint8_t   auto_load_leveling;
   uint8_t   autoLevelState;
   uint8_t   onboardSD;
@@ -157,6 +186,17 @@ char     end_gcode[MAX_GCODE_LENGTH+1];
 char     cancel_gcode[MAX_GCODE_LENGTH+1];
 }PRINT_GCODES;
 
+/**
+ * Bed Leveling type
+ */
+typedef enum
+{
+  BL_UNKNOWN = 0,                     // Unknown BL
+  BL_ABL,                             // Generic Auto Bed Leveling (ABL)
+  BL_BBL,                             // Bilinear Bed Leveling (BBL)
+  BL_UBL,                             // Unified Bed Leveling (UBL)
+  BL_MBL,                             // Mesh Bed Leveling (MBL)
+}BL_TYPE;
 
 typedef struct
 {
@@ -164,7 +204,7 @@ typedef struct
   uint8_t EEPROM;
   uint8_t autoReportTemp;
   uint8_t autoLevel;
-  uint8_t enableubl;
+  uint8_t blType;
   uint8_t zProbe;
   uint8_t levelingData;
   uint8_t softwarePower;
@@ -186,8 +226,10 @@ void initMachineSetting(void);
 void infoSettingsReset(void);
 void setupMachine(void);
 float flashUsedPercentage(void);
+void checkflashSign(void);
 
-
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif

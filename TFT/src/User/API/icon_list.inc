@@ -5,6 +5,8 @@
 *
 * Description: https://en.wikipedia.org/wiki/X_Macro
 */
+//after changing/adding/removing an icon, change the ICON_FLASH_SIGN in Settings.h
+
 X_ICON (HEAT)
 X_ICON (MOVE)
 X_ICON (HOME)
@@ -137,5 +139,7 @@ X_ICON (NOZZLE_UP)
 X_ICON (LEVEL_EDGE_DISTANCE)
 X_ICON (TUNING)
 X_ICON (PID)
-X_ICON (EXTRUDE_100)
+X_ICON (TUNE_EXTRUDER)
 X_ICON (CONNECTION_SETTINGS)
+
+//after changing/adding/removing an icon, change the ICON_FLASH_SIGN in Settings.h

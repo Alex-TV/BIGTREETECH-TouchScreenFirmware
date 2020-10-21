@@ -1,5 +1,5 @@
-#ifndef _CONFIGRATION_H_
-#define _CONFIGRATION_H_
+#ifndef _CONFIGURATION_H_
+#define _CONFIGURATION_H_
 #define CONFIG_VERSION 20200810
 //===========================================================================
 //============================= General Settings ============================
@@ -170,6 +170,7 @@
 #define HOTEND_NUM   1    // set in 1~6
 #define EXTRUDER_NUM 1    // set in 1~6
 #define FAN_NUM      1    // set in 1~6
+#define FAN_CTRL_NUM 0    // set in 1~2
 
 #define PREHEAT_LABELS   {"PLA", "PETG", "ABS", "WOOD", "TPU", "NYLON"}
 #define PREHEAT_HOTEND   {200,   240,    230,   170,    220,   250}
@@ -184,9 +185,19 @@
 #define TOOL_CHANGE      {"T0",   "T1",      "T2",      "T3",      "T4",      "T5"}
 #define EXTRUDER_ID      {"E0",   "E1",      "E2",      "E3",      "E4",      "E5"}
 
-#define FAN_MAX_PWM      {255,       255,       255,       255,       255,       255}
-#define FAN_DISPLAY_ID   {"F0",      "F1",      "F2",      "F3",      "F4",      "F5"}
-#define FAN_CMD          {"M106 P0", "M106 P1", "M106 P2", "M106 P3", "M106 P4", "M106 P5" };
+/**
+ * Fan control
+ * 
+ * Fan type Options: 
+ *               0: FAN_TYPE_F       - default cooling fan speed (Check Marlin GCode M106)
+ *               1: FAN_TYPE_CTRL_S  - Controller fan speed for stepper or hot bed ON (Check Marlin GCode M710)
+ *               2: FAN_TYPE_CTRL_I  - Controller fan idle speed  (Check Marlin gcode - M710)
+ *               8: FAN_TYPE_UNKNOWN - Unknown / Not defined
+ */
+#define FAN_MAX_PWM      {       255,       255,       255,       255,       255,       255,       255,       255 };
+#define FAN_DISPLAY_ID   {      "F0",      "F1",      "F2",      "F3",      "F4",      "F5",     "CtL",     "CtI" };
+#define FAN_CMD          { "M106 P0", "M106 P1", "M106 P2", "M106 P3", "M106 P4", "M106 P5",    "M710",    "M710" };
+#define FAN_TYPE         {         0,         0,         0,         0,         0,         0,         1,         2 };
 
 #define SPEED_ID         {"Sp.", "Fr."}
 
@@ -206,8 +217,8 @@
 #define X_MIN_POS 0
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
-#define X_MAX_POS 235
-#define Y_MAX_POS 233
+#define X_MAX_POS 230
+#define Y_MAX_POS 225
 #define Z_MAX_POS 250
 
 // Specify a pause position as { X, Y, Z_raise }
@@ -227,24 +238,26 @@
 #define NOZZLE_PAUSE_M600_M601
 
 /**
- * Auto Save Load Leveling Data
- * The TFT will auto detect if Auto Bed Level is available.
+ * Auto save/load Bed Leveling data
+ * The TFT will auto detect if BL data are available.
  * Enable this will send "M500" after "G29" to store leveling value
  * and send "M420 S1" to enable leveling state after startup
+ *
+ * Options:  0: Disabled    1: Enabled
  */
-#define AUTO_SAVE_LOAD_LEVELING_VALUE true //to enabled: true | to disabled: false
+#define AUTO_SAVE_LOAD_BL_VALUE 1
 
 /**
- * Enable Unified Bed Leveling options
- * Will attempt to auto detect and enable specific UBL options.
+ * Enable Bed Leveling options
+ * Will attempt to auto detect and/or enable specific BL options.
  *
  * WARNING - If you're not sure, leave on auto-detect or disabled.
  *           UBL has extra options other leveling systems might not have.
  *
- * Options:  0: Disabled    1: Enabled    2: Auto-detect [default]
+ * Options:  0: Disabled    1: Auto-detect [default]    2: ABL    3: BBL    4: UBL    5: MBL
  *
  */
-#define ENABLE_UBL_VALUE 2
+#define ENABLE_BL_VALUE 1
 
 /**
  * Enable friendly probe offset language.
@@ -436,6 +449,6 @@
 #define PRINT_END_GCODE "G90\nG1 E-4\nG92 E0\nM18\n" // Switch to absolute positioning, reduce filament pressure by performing small retract, reset extruder position, disable steppers
 
 // Cancel G-code - run this G-code after canceling print
-#define PRINT_CANCEL_GCODE "G28 X Y R10\nG1 Y230" // Home XY and raise Z 10mm
+#define PRINT_CANCEL_GCODE "G28 X Y R10\nG1 Y225" // Home XY and raise Z 10mm
 
 #endif
